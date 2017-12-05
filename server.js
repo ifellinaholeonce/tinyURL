@@ -44,6 +44,11 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDB[req.params.id];
+  res.redirect(303, "/urls");
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDB);
 });
@@ -51,7 +56,11 @@ app.get("/urls.json", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   if (urlDB[shortURL]) {
+    if (urlDB[shortURL].startsWith('http://www.') || urlDB[shortURL].startsWith('https://www.')) {
     res.redirect(307, urlDB[shortURL]);
+    } else {
+    res.redirect(307, `http://www.${urlDB[shortURL]}`);
+    }
   } else {
     res.redirect(404, "/urls/new");
     console.log(urlDB[shortURL]);
@@ -59,17 +68,19 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 ////////////////////////////////////////////////////
-//////////////RANDOM NUMBER GEN/////////////////////
+//////////////RANDOM ALPHANUMBER GEN/////////////////////
 ////////////////////////////////////////////////////
 let generateRandomString = () => {
   let length = 6;
   let chars = '#aA';
-  var mask = '';
+  let mask = '';
   if (chars.indexOf('a') > -1) mask += 'abcdefghijklmnopqrstuvwxyz';
   if (chars.indexOf('A') > -1) mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   if (chars.indexOf('#') > -1) mask += '0123456789';
-  var result = '';
-  for (var i = length; i > 0; --i) result += mask[Math.round(Math.random() * (mask.length - 1))];
+  let result = '';
+  for (let i = length; i > 0; --i) {
+    result += mask[Math.round(Math.random() * (mask.length - 1))];
+  }
   return result;
 };
 

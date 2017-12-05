@@ -7,10 +7,15 @@
 <body>
   <% include ./partials/_header %>
 
-  <a href="/shorten"><h1>Shorten your link</h1></a>
+  <a href="/urls/new"><h1>Shorten your link</h1></a>
   <ul>
     <% for ( let site in templateVars ) { %>
-      <li> <%= templateVars[site] %> shortened to <%= site %> </li>
+      <li>
+        <%= templateVars[site] %> shortened to <%= site %>
+        <form method="POST" action="/urls/<%=site%>/delete">
+          <input type="submit" value="DELETE">
+        </form>
+      </li>
     <% } %>
   </ul>
 </body>
