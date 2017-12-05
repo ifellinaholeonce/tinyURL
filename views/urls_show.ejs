@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+</head>
+
+<body>
+  <% include ./partials/_header %>
+
+  <h1>Shortened:</h1>
+  <% for ( site in urlDB ) { %>
+      <% if (site == shortURL) { %>
+      <%= urlDB[site]%>
+      <% } %>
+  <% } %>
+  <br>
+  to<br>
+  <%= shortURL %>
+</body>
+</html>

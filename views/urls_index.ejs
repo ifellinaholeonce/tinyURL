@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+</head>
+
+<body>
+  <% include ./partials/_header %>
+
+  <a href="/shorten"><h1>Shorten your link</h1></a>
+  <ul>
+    <% for ( let site in templateVars ) { %>
+      <li> <%= templateVars[site] %> shortened to <%= site %> </li>
+    <% } %>
+  </ul>
+</body>
+</html>
