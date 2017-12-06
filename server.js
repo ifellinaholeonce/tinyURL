@@ -4,10 +4,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 8080;
 
-let urlDB = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+let urlDB = require('./models/urls').urlDB;
+let users = require('./models/users').users;
 
 app.set("view engine", "ejs");
 
@@ -19,6 +17,10 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+////////////////////////////////////////////////////
+//////////////USER REGISTRATION COOKIE//////////////
+////////////////////////////////////////////////////
+
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect(303, `/urls`);
@@ -29,6 +31,26 @@ app.post("/logout", (req, res) => {
   res.redirect(303, `/urls`);
 });
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.post("/register", (req, res) => {
+  let id = generateRandomString(8, '#a');
+  users[id] = {
+    id: id,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('user_id', id);
+  res.redirect(303, '/urls');
+  console.log(req.body.email, req.body.password);
+  console.log(users);
+});
+
+////////////////////////////////////////////////////
+//////////////APP ROUTING///////////////////////////
+////////////////////////////////////////////////////
 
 app.get("/urls", (req, res) => {
   let templateVars = {
@@ -43,7 +65,7 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
-  let shortURL = generateRandomString(longURL);
+  let shortURL = generateRandomString(6, '#aA');
   urlDB[shortURL] = longURL;
   res.redirect(303, `/urls/${shortURL}`);
 });
@@ -105,11 +127,9 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 ////////////////////////////////////////////////////
-//////////////RANDOM ALPHANUMBER GEN/////////////////////
+//////////////RANDOM ALPHANUMBER GEN////////////////
 ////////////////////////////////////////////////////
-let generateRandomString = () => {
-  let length = 6;
-  let chars = '#aA';
+let generateRandomString = (length, chars) => {
   let mask = '';
   if (chars.indexOf('a') > -1) mask += 'abcdefghijklmnopqrstuvwxyz';
   if (chars.indexOf('A') > -1) mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
