@@ -21,9 +21,25 @@ app.get("/", (req, res) => {
 //////////////USER REGISTRATION COOKIE//////////////
 ////////////////////////////////////////////////////
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect(303, `/urls`);
+  let email = req.body.email;
+  let password = req.body.password;
+  if (checkEmailExists(email)) {
+    if (checkPassword(email, password)) {
+      res.cookie('user_id', getUserID(email));
+      res.redirect(303, `/urls`);
+    }
+  } else {
+    res.satus(403).send("Forbidden.");
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -31,9 +47,6 @@ app.post("/logout", (req, res) => {
   res.redirect(303, `/urls`);
 });
 
-app.get("/register", (req, res) => {
-  res.render("register");
-});
 
 app.post("/register", (req, res) => {
   let email = req.body.email;
@@ -146,11 +159,10 @@ let generateRandomString = (length, chars) => {
 };
 
 ////////////////////////////////////////////////////
-//////////////Check Email Registration//////////////
+//////////////Check Registration////////////////////
 ////////////////////////////////////////////////////
 let checkEmailExists = (email) => {
   for (let user in users) {
-    console.log(users[user].email);
     if (users[user].email == email) {
       return true;
     }
@@ -159,7 +171,21 @@ let checkEmailExists = (email) => {
     return false;
 };
 
+let checkPassword = (email, password) => {
+  for (let user in users) {
+    if (users[user].email == email) {
+      return users[user].password === password;
+    }
+  }
+};
 
+let getUserID = (email) => {
+  for (let user in users) {
+    if (users[user].email == email) {
+      return users[user].id;
+    }
+  }
+};
 ////////////////////////////////////////////////////
 //////////////////START APP/////////////////////////
 ////////////////////////////////////////////////////
