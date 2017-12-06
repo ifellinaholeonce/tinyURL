@@ -4,8 +4,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 8080;
 
-let urlDB = require('./models/urls').urlDB;
-let users = require('./models/users').users;
+const urlDB = require('./models/urls').urlDB;
+const users = require('./models/users').users;
 
 app.set("view engine", "ejs");
 
@@ -79,7 +79,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", {
     templateVars,
     user_id : templateVars.user_id,
-    urlDB : templateVars.urlDB
+    urlDB : urlsForId(templateVars.user_id)
   });
 });
 
@@ -96,7 +96,7 @@ app.post("/urls", (req, res) => {
    [shortURL]: longURL,
    'user_id': user_id
  };
-  console.log(urlDB);
+  //console.log(urlDB);
   res.redirect(303, `/urls/${shortURL}`);
 });
 
@@ -211,6 +211,20 @@ let getUserID = (email) => {
     }
   }
 };
+
+////////////////////////////////////////////////////
+//////////////Get urlDB for ID//////////////////////
+////////////////////////////////////////////////////
+let urlsForId = (id) => {
+  urlsUser = {};
+  for (let url in urlDB) {
+    if (urlDB[url].user_id === id)
+      urlsUser[url] = urlDB[url];
+  }
+  return urlsUser;
+};
+
+
 ////////////////////////////////////////////////////
 //////////////////START APP/////////////////////////
 ////////////////////////////////////////////////////
