@@ -32,11 +32,8 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
-  console.log("Attempting to login");
   if (checkEmailExists(email)) {
-    console.log("Email found");
     if (checkPassword(email, password)) {
-      console.log("Password found");
       res.cookie('user_id', getUserID(email));
       res.redirect(303, `/urls`);
     }
@@ -65,7 +62,6 @@ app.post("/register", (req, res) => {
   };
   res.cookie('user_id', id);
   res.redirect(303, '/urls');
-  console.log(users);
 });
 
 ////////////////////////////////////////////////////
@@ -73,7 +69,6 @@ app.post("/register", (req, res) => {
 ////////////////////////////////////////////////////
 
 app.get("/urls", (req, res) => {
-  console.log(users[req.cookies.user_id]);
   let templateVars = {
     user_id: req.cookies.user_id,
     urlDB
@@ -86,13 +81,22 @@ app.get("/urls", (req, res) => {
     user_id : templateVars.user_id,
     urlDB : templateVars.urlDB
   });
-    console.log(templateVars);
 });
 
 app.post("/urls", (req, res) => {
+  let user_id = "";
+  if (users[req.cookies.user_id]) {
+    user_id = req.cookies.user_id;
+  } else {
+    console.log("not logged in");
+  }
   let longURL = req.body.longURL;
   let shortURL = generateRandomString(6, '#aA');
-  urlDB[shortURL] = longURL;
+  urlDB[shortURL] = {
+   [shortURL]: longURL,
+   'user_id': user_id
+ };
+  console.log(urlDB);
   res.redirect(303, `/urls/${shortURL}`);
 });
 
@@ -188,7 +192,6 @@ let checkEmailExists = (email) => {
       return true;
     }
   }
-    console.log(false);
     return false;
 };
 
