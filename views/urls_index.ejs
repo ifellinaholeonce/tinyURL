@@ -12,14 +12,10 @@
     <% for ( let site in urlDB ) { %>
       <li>
         <%=urlDB[site][site]%> shortened to <%= site %>
-        <% if (urlDB[site].user_id == user_id) {%>
           <a href="/urls/<%=site%>">Edit</a>
           <form method="POST" action="/urls/<%=site%>/delete">
             <input type="submit" value="DELETE">
           </form>
-        <% } else { %>
-          <i>Post owned by <%= urlDB[site].user_id %></i>
-        <% } %>
       </li>
     <% } %>
   </ul>

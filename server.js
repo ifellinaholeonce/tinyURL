@@ -124,17 +124,25 @@ app.get("/urls/:id", (req, res) => {
   if (users[req.cookies.user_id]) {
     templateVars.userEmail = users[req.cookies.user_id].email;
   }
-  if (urlDB[req.params.id]) {
-    res.render("urls_show", {
-      templateVars,
-      user_id : templateVars.user_id,
-      shortURL : templateVars.shortURL,
-      urlDB : templateVars.urlDB
-    });
+  if(req.cookies.user_id) {
+    for (let url in urlsForId(req.cookies.user_id)) {
+      console.log(url);
+      if (url === req.params.id) {
+        res.render("urls_show", {
+          templateVars,
+          user_id : templateVars.user_id,
+          shortURL : templateVars.shortURL,
+          urlDB : templateVars.urlDB
+        });
+      } else {
+        res.status(400).redirect("/urls");
+      }
+    }
   } else {
-    res.redirect(404, "/urls/new");
+    res.status(400).redirect("/");
   }
 });
+
 
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
@@ -153,15 +161,16 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let templateVars = {
-    user_id: req.cookies.user_id
-  };
+  // let templateVars = {
+  //   user_id: req.cookies.user_id
+  // };
   let shortURL = req.params.shortURL;
+  //console.log(urlDB[shortURL][shortURL]);
   if (urlDB[shortURL]) {
-    if (urlDB[shortURL].startsWith('http://www.') || urlDB[shortURL].startsWith('https://www.')) {
-    res.redirect(307, urlDB[shortURL]);
+    if (urlDB[shortURL][shortURL].startsWith('http://www.') || urlDB[shortURL][shortURL].startsWith('https://www.')) {
+    res.redirect(307, urlDB[shortURL][shortURL]);
     } else {
-    res.redirect(307, `http://www.${urlDB[shortURL]}`);
+    res.redirect(307, `http://www.${urlDB[shortURL][shortURL]}`);
     }
   } else {
     res.redirect(404, "/urls/new");
