@@ -102,11 +102,13 @@ app.get("/urls/new", (req, res) => {
   };
   if (users[req.cookies.user_id]) {
     templateVars.userEmail = users[req.cookies.user_id].email;
+    res.render("urls_new", {
+      templateVars,
+      user_id: templateVars.user_id
+    });
+  } else {
+    res.redirect('/login');
   }
-  res.render("urls_new", {
-    templateVars,
-    user_id: templateVars.user_id
-  });
 });
 
 app.get("/urls/:id", (req, res) => {
