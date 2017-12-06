@@ -78,7 +78,7 @@ app.get("/urls", (req, res) => {
     user_id: req.cookies.user_id,
     urlDB
   };
-  if (req.cookies.user_id) {
+  if (users[req.cookies.user_id]) {
     templateVars.userEmail = users[req.cookies.user_id].email;
   }
   res.render("urls_index", {
@@ -100,7 +100,13 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     user_id: req.cookies.user_id
   };
-  res.render("urls_new", {user_id: templateVars.user_id});
+  if (users[req.cookies.user_id]) {
+    templateVars.userEmail = users[req.cookies.user_id].email;
+  }
+  res.render("urls_new", {
+    templateVars,
+    user_id: templateVars.user_id
+  });
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -109,8 +115,12 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id,
     urlDB
     };
+  if (users[req.cookies.user_id]) {
+    templateVars.userEmail = users[req.cookies.user_id].email;
+  }
   if (urlDB[req.params.id]) {
     res.render("urls_show", {
+      templateVars,
       user_id : templateVars.user_id,
       shortURL : templateVars.shortURL,
       urlDB : templateVars.urlDB
