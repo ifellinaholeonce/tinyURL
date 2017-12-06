@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 8080;
 
 let urlDB = {
@@ -11,10 +12,16 @@ let urlDB = {
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 
 app.get("/", (req, res) => {
   res.end("Hello!");
+});
+
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect(303, `/urls`);
 });
 
 app.get("/urls", (req, res) => {
