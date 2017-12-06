@@ -9,9 +9,9 @@
 
   <a href="/urls/new"><h1>Shorten your link</h1></a>
   <ul>
-    <% for ( let site in templateVars ) { %>
+    <% for ( let site in urlDB ) { %>
       <li>
-        <%= templateVars[site] %> shortened to <%= site %>
+        <%=urlDB[site]%> shortened to <%= site %>
         <a href="/urls/<%=site%>">Edit</a>
         <form method="POST" action="/urls/<%=site%>/delete">
           <input type="submit" value="DELETE">

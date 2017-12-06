@@ -25,9 +25,14 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = urlDB;
-  res.render("urls_index", {templateVars});
-  console.log(templateVars);
+  let templateVars = {
+    username: req.cookies.username,
+    urlDB
+  };
+  res.render("urls_index", {
+    username : templateVars.username,
+    urlDB : templateVars.urlDB
+  });
 });
 
 app.post("/urls", (req, res) => {
@@ -38,14 +43,24 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies.username
+  };
+  res.render("urls_new", {username: templateVars.username});
 });
 
-
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {shortURL: req.params.id, urlDB };
+  let templateVars = {
+    username: req.cookies.username,
+    shortURL: req.params.id,
+    urlDB
+    };
   if (urlDB[req.params.id]) {
-    res.render("urls_show", templateVars);
+    res.render("urls_show", {
+      username : templateVars.username,
+      shortURL : templateVars.shortURL,
+      urlDB : templateVars.urlDB
+    });
   } else {
     res.redirect(404, "/urls/new");
   }
@@ -68,6 +83,9 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  let templateVars = {
+    username: req.cookies.username
+  };
   let shortURL = req.params.shortURL;
   if (urlDB[shortURL]) {
     if (urlDB[shortURL].startsWith('http://www.') || urlDB[shortURL].startsWith('https://www.')) {
@@ -77,7 +95,6 @@ app.get("/u/:shortURL", (req, res) => {
     }
   } else {
     res.redirect(404, "/urls/new");
-    console.log(urlDB[shortURL]);
   }
 });
 
