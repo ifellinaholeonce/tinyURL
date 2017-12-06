@@ -6,14 +6,11 @@
 <body>
   <% include ./partials/_header %>
 
-  <h1>Shortened:</h1>
-  <% for ( site in urlDB ) { %>
-      <% if (site == shortURL) { %>
-      <%= urlDB[site]%>
-      <% } %>
-  <% } %>
-  <br>
-  to<br>
-  <%= shortURL %>
+  <h1><%=shortURL%></h1>
+  <h2><%=urlDB[shortURL]%></h2>
+ <form action="#" method="POST" style="margin:150px;">
+      <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
+      <input type="submit" value="Update">
+  </form>
 </body>
 </html>

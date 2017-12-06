@@ -44,6 +44,13 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
+app.post("/urls/:id", (req, res) => {
+  let shortURL = req.params.id;
+  let longURL = req.body.longURL;
+  urlDB[shortURL] = longURL;
+  res.redirect(303, `/urls/${shortURL}`);
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDB[req.params.id];
   res.redirect(303, "/urls");
