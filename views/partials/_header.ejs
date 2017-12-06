@@ -1,8 +1,8 @@
 <title>TinyURL</title>
 
-<% if (username) { %>
+<% if (user_id) { %>
   <form action="/logout" method="POST" style="margin:150px;">
-    <p>Username: <%=username%></p>
+    <p>Username: <%=user_id%></p>
     <input type="submit" value="Logout">
   </form>
 <% } else { %>

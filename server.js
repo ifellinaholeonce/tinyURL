@@ -36,15 +36,19 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
+  if (!email || !password || checkEmailExists(email)) {
+    res.status(400).send("Invalid Registration");
+  }
   let id = generateRandomString(8, '#a');
   users[id] = {
     id: id,
-    email: req.body.email,
-    password: req.body.password
+    email: email,
+    password: password
   };
   res.cookie('user_id', id);
   res.redirect(303, '/urls');
-  console.log(req.body.email, req.body.password);
   console.log(users);
 });
 
@@ -54,11 +58,11 @@ app.post("/register", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    username: req.cookies.username,
+    user_id: req.cookies.user_id,
     urlDB
   };
   res.render("urls_index", {
-    username : templateVars.username,
+    user_id : templateVars.user_id,
     urlDB : templateVars.urlDB
   });
 });
@@ -72,20 +76,20 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies.username
+    user_id: req.cookies.user_id
   };
-  res.render("urls_new", {username: templateVars.username});
+  res.render("urls_new", {user_id: templateVars.user_id});
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    username: req.cookies.username,
+    user_id: req.cookies.user_id,
     shortURL: req.params.id,
     urlDB
     };
   if (urlDB[req.params.id]) {
     res.render("urls_show", {
-      username : templateVars.username,
+      user_id : templateVars.user_id,
       shortURL : templateVars.shortURL,
       urlDB : templateVars.urlDB
     });
@@ -112,7 +116,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let templateVars = {
-    username: req.cookies.username
+    user_id: req.cookies.user_id
   };
   let shortURL = req.params.shortURL;
   if (urlDB[shortURL]) {
@@ -140,6 +144,21 @@ let generateRandomString = (length, chars) => {
   }
   return result;
 };
+
+////////////////////////////////////////////////////
+//////////////Check Email Registration//////////////
+////////////////////////////////////////////////////
+let checkEmailExists = (email) => {
+  for (let user in users) {
+    console.log(users[user].email);
+    if (users[user].email == email) {
+      return true;
+    }
+  }
+    console.log(false);
+    return false;
+};
+
 
 ////////////////////////////////////////////////////
 //////////////////START APP/////////////////////////
