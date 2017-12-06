@@ -1,5 +1,12 @@
 <title>TinyURL</title>
 
-<a href="/login">Login</a>
+<% if (!user_id) { %>
+  <a href="/login">Login</a>
+<% } else { %>
+  Logged in as <%=templateVars.userEmail%>
+  <form method="POST" action="/logout">
+    <input type="submit" value="Logout">
+  </form>
+<% } %>
 <br>
 <a href="/register">Register</a>

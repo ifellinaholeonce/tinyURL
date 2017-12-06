@@ -32,18 +32,21 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
+  console.log("Attempting to login");
   if (checkEmailExists(email)) {
+    console.log("Email found");
     if (checkPassword(email, password)) {
+      console.log("Password found");
       res.cookie('user_id', getUserID(email));
       res.redirect(303, `/urls`);
     }
   } else {
-    res.satus(403).send("Forbidden.");
+    res.status(403).send("Forbidden.");
   }
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect(303, `/urls`);
 });
 
@@ -70,14 +73,20 @@ app.post("/register", (req, res) => {
 ////////////////////////////////////////////////////
 
 app.get("/urls", (req, res) => {
+  console.log(users[req.cookies.user_id]);
   let templateVars = {
     user_id: req.cookies.user_id,
     urlDB
   };
+  if (req.cookies.user_id) {
+    templateVars.userEmail = users[req.cookies.user_id].email;
+  }
   res.render("urls_index", {
+    templateVars,
     user_id : templateVars.user_id,
     urlDB : templateVars.urlDB
   });
+    console.log(templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -177,6 +186,7 @@ let checkPassword = (email, password) => {
       return users[user].password === password;
     }
   }
+  return false;
 };
 
 let getUserID = (email) => {
