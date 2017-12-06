@@ -1,8 +1,14 @@
 <title>TinyURL</title>
 
-<form action="/login" method="POST" style="margin:150px;">
-  <label for="username">Username:</label>
-  <input id="username" type="text" name="username" placeholder="username" style="width: 300px">
-  <input type="submit" value="Submit">
-</form>
-<p><%=username%></p>
+<% if (username) { %>
+  <form action="/logout" method="POST" style="margin:150px;">
+    <p>Username: <%=username%></p>
+    <input type="submit" value="Logout">
+  </form>
+<% } else { %>
+  <form action="/login" method="POST" style="margin:150px;">
+    <label for="username">Username:</label>
+    <input id="username" type="text" name="username" placeholder="username" style="width: 300px">
+    <input type="submit" value="Submit">
+  </form>
+<% } %>
