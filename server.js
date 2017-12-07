@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+
 const PORT = process.env.PORT || 8080;
 
 const urlDB = require('./models/urls').urlDB;
@@ -36,6 +38,21 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  if (checkEmailExists(email)) {
+    res.status(400).send("Email already registered");
+  }
+  const id = generateRandomString(8, '#a');
+  users[id] = {
+    id: id,
+    email: email,
+    hashedPassword: hashPassword(password)
+  };
+  res.cookie('user_id', id);
+  res.redirect(303, '/urls');
+});
+
 app.get("/login", (req, res) => {
   let templateVars = {
     user_id: req.cookies.user_id,
@@ -45,15 +62,15 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let email = req.body.email;
-  let password = req.body.password;
+  const { email, password } = req.body;
   if (checkEmailExists(email)) {
-    if (checkPassword(email, password)) {
+    const user = users[getUserID(email)];
+    if (checkPassword(password, user.hashedPassword)) {
       res.cookie('user_id', getUserID(email));
       res.redirect(303, `/urls`);
     }
   } else {
-    res.status(403).send("Forbidden.");
+    res.status(400).redirect('/register');
   }
 });
 
@@ -62,28 +79,12 @@ app.post("/logout", (req, res) => {
   res.redirect(303, `/urls`);
 });
 
-
-app.post("/register", (req, res) => {
-  let email = req.body.email;
-  let password = req.body.password;
-  if (!email || !password || checkEmailExists(email)) {
-    res.status(400).send("Invalid Registration");
-  }
-  let id = generateRandomString(8, '#a');
-  users[id] = {
-    id: id,
-    email: email,
-    password: password
-  };
-  res.cookie('user_id', id);
-  res.redirect(303, '/urls');
-});
-
 ////////////////////////////////////////////////////
 //////////////APP ROUTING///////////////////////////
 ////////////////////////////////////////////////////
 
 app.get("/urls", (req, res) => {
+  console.log(users);
   const { user_id } = req.cookies;
   const user = users[user_id];
   let templateVars = {
@@ -186,6 +187,17 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 ////////////////////////////////////////////////////
+//////////////BCRYPT////////////////////////////////
+////////////////////////////////////////////////////
+let hashPassword = (password) => {
+  return bcrypt.hashSync(password, 10);
+};
+
+let checkPassword = (password, hashedPassword) => {
+  return bcrypt.compareSync(password, hashedPassword);
+};
+
+////////////////////////////////////////////////////
 //////////////RANDOM ALPHANUMBER GEN////////////////
 ////////////////////////////////////////////////////
 let generateRandomString = (length, chars) => {
@@ -212,14 +224,14 @@ let checkEmailExists = (email) => {
     return false;
 };
 
-let checkPassword = (email, password) => {
-  for (let user in users) {
-    if (users[user].email == email) {
-      return users[user].password === password;
-    }
-  }
-  return false;
-};
+// let checkPassword = (email, password) => {
+//   for (let user in users) {
+//     if (users[user].email == email) {
+//       return users[user].password === password;
+//     }
+//   }
+//   return false;
+// };
 
 let getUserID = (email) => {
   for (let user in users) {

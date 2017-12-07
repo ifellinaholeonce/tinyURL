@@ -4,18 +4,17 @@
   <div class="container">
     <a href="/urls" class="navbar-brand">TinyURL</a>
     <ul class="nav navbar-nav navbar-right">
-    <% if (!user_id) { %>
+      <% if (!user_id) { %>
       <li><a href="/login">Login</a></li>
       <li><a href="/register">Register</a></li>
-    <% } else { %>
+      <% } else { %>
       <% if (userEmail !== "'User not found'") { %>
-        Logged in as <%=userEmail%>
+      Logged in as <%=userEmail%>
       <% } %>
-  </ul>
-        <button class="btn btn-secondary" type="submit">Logout
-          <form method="POST" action="/logout">
-          </form>
-        </button>
+    </ul>
+      <form method="POST" action="/logout">
+        <input type="submit" value="Logout" />
+      </form>
     <% } %>
   </div>
 </nav>
