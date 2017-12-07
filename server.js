@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
   const { user_id } = req.cookies;
   const user = users[user_id];
   let templateVars = {
-    user_id,
+    user: users[req.cookies.user_id],
     urlDB
   };
   templateVars.userEmail = user ? user.email : 'User not found';
@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 
 app.get("/register", (req, res) => {
   let templateVars = {
-    user_id: req.cookies.user_id,
+    user: users[req.cookies.user_id],
     urlDB
   };
   res.render("register", templateVars);
@@ -55,7 +55,7 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   let templateVars = {
-    user_id: req.cookies.user_id,
+    user: users[req.cookies.user_id],
     urlDB
   };
   res.render("login", templateVars);
@@ -88,7 +88,7 @@ app.get("/urls", (req, res) => {
   const { user_id } = req.cookies;
   const user = users[user_id];
   let templateVars = {
-    user_id,
+    user: users[user_id],
     urlDB: urlsForId(user_id)
   };
   if (user) {
@@ -120,7 +120,7 @@ app.get("/urls/new", (req, res) => {
   const { user_id } = req.cookies;
   const user = user_id;
   let templateVars = {
-    user_id
+    user: users[user_id],
   };
   if (user) {
     templateVars.userEmail = user.email;
@@ -135,7 +135,7 @@ app.get("/urls/:id", (req, res) => {
   const { id: shortURL } = req.params;
   const user = user_id;
   let templateVars = {
-    user_id,
+    user: users[req.cookies.user_id],
     shortURL,
     urlDB
     };
