@@ -1,23 +1,34 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-
+  <% include ./partials/_head %>
 </head>
 
 <body>
   <% include ./partials/_header %>
-
-  <a href="/urls/new"><h1>Shorten your link</h1></a>
+<div class="container-fluid" id="index_container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="jumbotron" style=>
+       <a href="/urls/new"><h1>Shorten your link</h1></a>
+      </div>
+    </div>
+  </div>
   <ul>
+    <div class="container">
     <% for ( let site in urlDB ) { %>
+    <div class="row">
       <li>
         <%=urlDB[site][site]%> shortened to <%= site %>
-          <a href="/urls/<%=site%>">Edit</a>
-          <form method="POST" action="/urls/<%=site%>/delete">
-            <input type="submit" value="DELETE">
-          </form>
+        <a href="/urls/<%=site%>">Edit</a>
+        <form method="POST" action="/urls/<%=site%>/delete">
+          <input type="submit" value="DELETE">
+        </form>
       </li>
+    </div>
     <% } %>
+    </div>
   </ul>
+</div>
 </body>
 </html>

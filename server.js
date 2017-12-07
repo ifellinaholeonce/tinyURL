@@ -14,7 +14,14 @@ app.use(cookieParser());
 
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  const { user_id } = req.cookies;
+  const user = users[user_id];
+  let templateVars = {
+    user_id,
+    urlDB
+  };
+  templateVars.userEmail = user ? user.email : 'User not found';
+  res.render("landing", templateVars);
 });
 
 ////////////////////////////////////////////////////
@@ -22,11 +29,19 @@ app.get("/", (req, res) => {
 ////////////////////////////////////////////////////
 
 app.get("/register", (req, res) => {
-  res.render("register");
+  let templateVars = {
+    user_id: req.cookies.user_id,
+    urlDB
+  };
+  res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
+  let templateVars = {
+    user_id: req.cookies.user_id,
+    urlDB
+  };
+  res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {
@@ -69,18 +84,18 @@ app.post("/register", (req, res) => {
 ////////////////////////////////////////////////////
 
 app.get("/urls", (req, res) => {
+  const { user_id } = req.cookies;
+  const user = users[user_id];
   let templateVars = {
-    user_id: req.cookies.user_id,
-    urlDB
+    user_id,
+    urlDB: urlsForId(user_id)
   };
-  if (users[req.cookies.user_id]) {
-    templateVars.userEmail = users[req.cookies.user_id].email;
+  if (user) {
+    templateVars.userEmail = user.email;
+  } else {
+    res.status(400).redirect("/");
   }
-  res.render("urls_index", {
-    templateVars,
-    user_id : templateVars.user_id,
-    urlDB : urlsForId(templateVars.user_id)
-  });
+  res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -101,39 +116,33 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  const { user_id } = req.cookies;
+  const user = user_id;
   let templateVars = {
-    user_id: req.cookies.user_id
+    user_id
   };
-  if (users[req.cookies.user_id]) {
-    templateVars.userEmail = users[req.cookies.user_id].email;
-    res.render("urls_new", {
-      templateVars,
-      user_id: templateVars.user_id
-    });
+  if (user) {
+    templateVars.userEmail = user.email;
+    res.render("urls_new", templateVars);
   } else {
     res.redirect('/login');
   }
 });
 
 app.get("/urls/:id", (req, res) => {
+  const { user_id } = req.cookies;
+  const { id: shortURL } = req.params;
+  const user = user_id;
   let templateVars = {
-    user_id: req.cookies.user_id,
-    shortURL: req.params.id,
+    user_id,
+    shortURL,
     urlDB
     };
-  if (users[req.cookies.user_id]) {
-    templateVars.userEmail = users[req.cookies.user_id].email;
-  }
-  if(req.cookies.user_id) {
-    for (let url in urlsForId(req.cookies.user_id)) {
-      console.log(url);
-      if (url === req.params.id) {
-        res.render("urls_show", {
-          templateVars,
-          user_id : templateVars.user_id,
-          shortURL : templateVars.shortURL,
-          urlDB : templateVars.urlDB
-        });
+  templateVars.userEmail = user ? user.email : 'User not found';
+  if(user_id) {
+    for (let url in urlsForId(user_id)) {
+      if (url === shortURL) {
+        res.render("urls_show", templateVars);
       } else {
         res.status(400).redirect("/urls");
       }
@@ -142,7 +151,6 @@ app.get("/urls/:id", (req, res) => {
     res.status(400).redirect("/");
   }
 });
-
 
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;

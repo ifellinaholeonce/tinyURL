@@ -1,12 +1,23 @@
 <title>TinyURL</title>
 
-<% if (!user_id) { %>
-  <a href="/login">Login</a>
-<% } else { %>
-  Logged in as <%=templateVars.userEmail%>
-  <form method="POST" action="/logout">
-    <input type="submit" value="Logout">
-  </form>
-<% } %>
-<br>
-<a href="/register">Register</a>
+<nav class="navbar navbar-dark bg-dark navbar-fixed-top">
+  <div class="container">
+    <a href="/urls" class="navbar-brand">TinyURL</a>
+    <ul class="nav navbar-nav navbar-right">
+    <% if (!user_id) { %>
+      <li><a href="/login">Login</a></li>
+      <li><a href="/register">Register</a></li>
+    <% } else { %>
+      <% if (userEmail !== "'User not found'") { %>
+        Logged in as <%=userEmail%>
+      <% } %>
+  </ul>
+        <button class="btn btn-secondary" type="submit">Logout
+          <form method="POST" action="/logout">
+          </form>
+        </button>
+    <% } %>
+  </div>
+</nav>
+
+
