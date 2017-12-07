@@ -217,12 +217,13 @@ let generateRandomString = (length, chars) => {
 ////////////////////////////////////////////////////
 let checkEmailExists = (email) => {
   for (let user in users) {
-    if (users[user].email == email) {
+    if (users[user].email === email) {
       return true;
     }
   }
     return false;
 };
+
 
 // let checkPassword = (email, password) => {
 //   for (let user in users) {
