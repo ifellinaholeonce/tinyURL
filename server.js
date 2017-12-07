@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const methodOverride = require('method-override');
 const bcrypt = require('bcrypt');
 
 
@@ -17,6 +18,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
 }));
+app.use(methodOverride('_method'));
 
 
 app.get("/", (req, res) => {
@@ -138,22 +140,20 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+
+
 app.get("/urls/:id", (req, res) => {
   const { user_id } = req.session;
   const { id: shortURL } = req.params;
-  const user = user_id;
   let templateVars = {
-    user: users[req.session.user_id],
+    user: users[user_id],
     shortURL,
     urlDB
     };
-  templateVars.userEmail = user ? user.email : 'User not found';
   if(user_id) {
     for (let url in urlsForId(user_id)) {
       if (url === shortURL) {
         res.render("urls_show", templateVars);
-      } else {
-        res.status(400).redirect("/urls");
       }
     }
   } else {
@@ -161,14 +161,14 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
-  urlDB[shortURL] = longURL;
+  urlDB[shortURL][shortURL] = longURL;
   res.redirect(303, `/urls/${shortURL}`);
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/delete", (req, res) => {
   delete urlDB[req.params.id];
   res.redirect(303, "/urls");
 });

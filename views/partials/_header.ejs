@@ -8,9 +8,7 @@
       <li><a href="/login">Login</a></li>
       <li><a href="/register">Register</a></li>
       <% } else { %>
-      <% if (userEmail !== "'User not found'") { %>
-      Logged in as <%=userEmail%>
-      <% } %>
+      Logged in as <%=user.email%>
     </ul>
     <form method="POST" action="/logout">
       <input type="submit" value="Logout" />

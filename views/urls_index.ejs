@@ -21,7 +21,7 @@
       <li>
         <%=urlDB[site][site]%> shortened to <%= site %>
         <a href="/urls/<%=site%>">Edit</a>
-        <form method="POST" action="/urls/<%=site%>/delete">
+        <form method="POST" action="/urls/<%=site%>/delete?_method=DELETE">
           <input type="submit" value="DELETE">
         </form>
       </li>
