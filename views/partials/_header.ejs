@@ -4,7 +4,7 @@
   <div class="container">
     <a href="/urls" class="navbar-brand">TinyURL</a>
     <ul class="nav navbar-nav navbar-right">
-      <% if (!user_id) { %>
+      <% if (!user) { %>
       <li><a href="/login">Login</a></li>
       <li><a href="/register">Register</a></li>
       <% } else { %>
@@ -12,9 +12,9 @@
       Logged in as <%=userEmail%>
       <% } %>
     </ul>
-      <form method="POST" action="/logout">
-        <input type="submit" value="Logout" />
-      </form>
+    <form method="POST" action="/logout">
+      <input type="submit" value="Logout" />
+    </form>
     <% } %>
   </div>
 </nav>
