@@ -28,7 +28,9 @@ app.get("/", (req, res) => {
     user,
     urlDB
   };
-  templateVars.userEmail = user ? user.email : 'User not found';
+  if (isLoggedIn(user_id)) {
+    res.redirect("/urls");
+  }
   res.render("landing", templateVars);
 });
 
@@ -232,22 +234,16 @@ let checkEmailExists = (email) => {
     return false;
 };
 
-
-// let checkPassword = (email, password) => {
-//   for (let user in users) {
-//     if (users[user].email == email) {
-//       return users[user].password === password;
-//     }
-//   }
-//   return false;
-// };
-
 let getUserID = (email) => {
   for (let user in users) {
     if (users[user].email == email) {
       return users[user].id;
     }
   }
+};
+
+let isLoggedIn = (userSession) => {
+  return (users[userSession]);
 };
 
 ////////////////////////////////////////////////////
