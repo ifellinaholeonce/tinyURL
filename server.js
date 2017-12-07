@@ -43,13 +43,18 @@ app.get("/register", (req, res) => {
     user: users[req.session.user_id],
     urlDB
   };
-  res.render("register", templateVars);
+  const { user_id } = req.session;
+  if (isLoggedIn(user_id)) {
+    res.redirect('/urls');
+  } else {
+    res.render("register", templateVars);
+  }
 });
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  if (checkEmailExists(email)) {
-    res.status(400).send("Email already registered");
+  if (!email || !password || checkEmailExists(email)) {
+    res.status(400).send("Invalid Email or Password or Email already registered.");
   }
   const id = generateRandomString(8, '#aA');
   users[id] = {
@@ -66,18 +71,19 @@ app.get("/login", (req, res) => {
     user: users[req.session.user_id],
     urlDB
   };
-  res.render("login", templateVars);
+  const { user_id } = req.session;
+  if (isLoggedIn(user_id)) {
+    res.redirect('/urls');
+  } else {
+    res.render("login", templateVars);
+  }
 });
 
 app.post("/login", (req, res) => {
-  console.log("LOGGING IN");
   const { email, password } = req.body;
   if (checkEmailExists(email)) {
-    console.log("Email Found");
     const user = users[getUserID(email)];
-    console.log('###user', user);
     if (checkPassword(password, user.hashedPassword)) {
-      console.log('###password is true');
       req.session.user_id = user.id;
       res.redirect(303, `/urls`);
     }
@@ -96,36 +102,32 @@ app.post("/logout", (req, res) => {
 ////////////////////////////////////////////////////
 
 app.get("/urls", (req, res) => {
-  console.log(users);
   const { user_id } = req.session;
   const user = users[user_id];
   let templateVars = {
     user: users[user_id],
     urlDB: urlsForId(user_id)
   };
-  if (user) {
-    templateVars.userEmail = user.email;
+  if (isLoggedIn(user_id)) {
+    res.render("urls_index", templateVars);
   } else {
     res.status(400).redirect("/");
   }
-  res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  let user_id = "";
-  if (users[req.session.user_id]) {
-    user_id = req.session.user_id;
+  const { user_id } = req.session;
+  if (isLoggedIn(user_id)) {
+    let { longURL } = req.body;
+    let shortURL = generateRandomString(6, '#aA');
+    urlDB[shortURL] = {
+     [shortURL]: longURL,
+     'user_id': user_id
+    };
+    res.redirect(303, `/urls/${shortURL}`);
   } else {
-    console.log("not logged in");
+    res.redirect(400, "/");
   }
-  let longURL = req.body.longURL;
-  let shortURL = generateRandomString(6, '#aA');
-  urlDB[shortURL] = {
-   [shortURL]: longURL,
-   'user_id': user_id
- };
-  //console.log(urlDB);
-  res.redirect(303, `/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -142,8 +144,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-
-
 app.get("/urls/:id", (req, res) => {
   const { user_id } = req.session;
   const { id: shortURL } = req.params;
@@ -152,27 +152,36 @@ app.get("/urls/:id", (req, res) => {
     shortURL,
     urlDB
     };
-  if(user_id) {
-    for (let url in urlsForId(user_id)) {
-      if (url === shortURL) {
-        res.render("urls_show", templateVars);
-      }
+  if (isLoggedIn(user_id)) {
+    let usersURLs = urlsForId(user_id);
+    if (usersURLs[shortURL]) {
+      res.render("urls_show", templateVars);
     }
-  } else {
-    res.status(400).redirect("/");
   }
+  res.status(400).redirect("/");
 });
 
 app.put("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
   urlDB[shortURL][shortURL] = longURL;
-  res.redirect(303, `/urls/${shortURL}`);
+  res.redirect(303, `/urls`);
 });
 
 app.delete("/urls/:id/delete", (req, res) => {
-  delete urlDB[req.params.id];
-  res.redirect(303, "/urls");
+  const { user_id } = req.session;
+    const { id: shortURL } = req.params;
+  if (isLoggedIn(user_id)) {
+    let usersURLs = urlsForId(user_id);
+    if (usersURLs[shortURL]) {
+      delete urlDB[shortURL];
+      res.redirect(303, "/urls");
+    } else {
+    res.status(400).redirect("/");
+    }
+  } else {
+    res.status(400).redirect("/");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
