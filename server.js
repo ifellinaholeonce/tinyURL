@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+
 
 const PORT = process.env.PORT || 8080;
 
@@ -12,14 +13,17 @@ const users = require('./models/users').users;
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 
 app.get("/", (req, res) => {
-  const { user_id } = req.cookies;
+  const { user_id } = req.session;
   const user = users[user_id];
   let templateVars = {
-    user: users[req.cookies.user_id],
+    user,
     urlDB
   };
   templateVars.userEmail = user ? user.email : 'User not found';
@@ -27,12 +31,12 @@ app.get("/", (req, res) => {
 });
 
 ////////////////////////////////////////////////////
-//////////////USER REGISTRATION COOKIE//////////////
+//////////////USER REGISTRATION SESSION/////////////
 ////////////////////////////////////////////////////
 
 app.get("/register", (req, res) => {
   let templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
     urlDB
   };
   res.render("register", templateVars);
@@ -43,30 +47,34 @@ app.post("/register", (req, res) => {
   if (checkEmailExists(email)) {
     res.status(400).send("Email already registered");
   }
-  const id = generateRandomString(8, '#a');
+  const id = generateRandomString(8, '#aA');
   users[id] = {
     id: id,
     email: email,
     hashedPassword: hashPassword(password)
   };
-  res.cookie('user_id', id);
+  req.session.user_id = id;
   res.redirect(303, '/urls');
 });
 
 app.get("/login", (req, res) => {
   let templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
     urlDB
   };
   res.render("login", templateVars);
 });
 
 app.post("/login", (req, res) => {
+  console.log("LOGGING IN");
   const { email, password } = req.body;
   if (checkEmailExists(email)) {
+    console.log("Email Found");
     const user = users[getUserID(email)];
+    console.log('###user', user);
     if (checkPassword(password, user.hashedPassword)) {
-      res.cookie('user_id', getUserID(email));
+      console.log('###password is true');
+      req.session.user_id = user.id;
       res.redirect(303, `/urls`);
     }
   } else {
@@ -75,7 +83,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect(303, `/urls`);
 });
 
@@ -85,7 +93,7 @@ app.post("/logout", (req, res) => {
 
 app.get("/urls", (req, res) => {
   console.log(users);
-  const { user_id } = req.cookies;
+  const { user_id } = req.session;
   const user = users[user_id];
   let templateVars = {
     user: users[user_id],
@@ -101,8 +109,8 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let user_id = "";
-  if (users[req.cookies.user_id]) {
-    user_id = req.cookies.user_id;
+  if (users[req.session.user_id]) {
+    user_id = req.session.user_id;
   } else {
     console.log("not logged in");
   }
@@ -117,7 +125,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const { user_id } = req.cookies;
+  const { user_id } = req.session;
   const user = user_id;
   let templateVars = {
     user: users[user_id],
@@ -131,11 +139,11 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const { user_id } = req.cookies;
+  const { user_id } = req.session;
   const { id: shortURL } = req.params;
   const user = user_id;
   let templateVars = {
-    user: users[req.cookies.user_id],
+    user: users[req.session.user_id],
     shortURL,
     urlDB
     };
@@ -171,7 +179,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   // let templateVars = {
-  //   user_id: req.cookies.user_id
+  //   user_id: req.session.user_id
   // };
   let shortURL = req.params.shortURL;
   //console.log(urlDB[shortURL][shortURL]);
