@@ -67,11 +67,11 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  const { user_id } = req.session;
   let templateVars = {
-    user: users[req.session.user_id],
+    user: users[user_id],
     urlDB
   };
-  const { user_id } = req.session;
   if (isLoggedIn(user_id)) {
     res.redirect('/urls');
   } else {
@@ -123,7 +123,8 @@ app.post("/urls", (req, res) => {
     urlDB[shortURL] = {
      [shortURL]: longURL,
      'user_id': user_id,
-     'visits': 0
+     'visits': 0,
+     'uniqueVisits': 0
     };
     res.redirect(303, `/urls/${shortURL}`);
   } else {
@@ -193,6 +194,7 @@ app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   if (urlDB[shortURL]) {
     urlDB[shortURL].visits++;
+    checkUniqueVisit(shortURL, req);
     if (urlDB[shortURL][shortURL].startsWith('http://www.') || urlDB[shortURL][shortURL].startsWith('https://www.')) {
     res.redirect(307, urlDB[shortURL][shortURL]);
     } else {
@@ -264,6 +266,21 @@ let urlsForId = (id) => {
   }
   return urlsUser;
 };
+
+////////////////////////////////////////////////////
+//////////////Check Session/////////////////////////
+////////////////////////////////////////////////////
+let checkUniqueVisit = (shortURL, req) => {
+  console.log(req.session[shortURL]);
+  if (req.session[shortURL]) {
+    return;
+  } else {
+    urlDB[shortURL].uniqueVisits++;
+    req.session[shortURL] = shortURL;
+    return;
+  }
+};
+
 
 
 ////////////////////////////////////////////////////
