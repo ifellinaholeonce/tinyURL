@@ -125,6 +125,7 @@ app.post("/urls", (req, res) => {
      'user_id': user_id,
      'visits': 0,
      'uniqueVisits': 0,
+     'visitors': [],
      'timestampCreated': generateTimestamp()
    };
    console.log(urlDB[shortURL]);
@@ -198,6 +199,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (urlDB[shortURL]) {
     urlDB[shortURL].visits++;
     checkUniqueVisit(shortURL, req);
+    addVisitorTimestamp(shortURL, req);
     if (urlDB[shortURL][shortURL].startsWith('http://www.') || urlDB[shortURL][shortURL].startsWith('https://www.')) {
       res.redirect(307, urlDB[shortURL][shortURL]);
     } else {
@@ -293,7 +295,6 @@ let urlsForId = (id) => {
 //////////////Check Session/////////////////////////
 ////////////////////////////////////////////////////
 let checkUniqueVisit = (shortURL, req) => {
-  console.log(req.session[shortURL]);
   if (req.session[shortURL]) {
     return;
   } else {
@@ -303,6 +304,14 @@ let checkUniqueVisit = (shortURL, req) => {
   }
 };
 
+let addVisitorTimestamp = (shortURL, req) => {
+  if (req.session.visitor_id) {
+    urlDB[shortURL].visitors.push([generateTimestamp(), req.session.visitor_id]);
+  } else {
+    req.session.visitor_id = `v_${generateRandomString(6, '#a')}`;
+    urlDB[shortURL].visitors.push([generateTimestamp(), req.session.visitor_id]);
+  }
+};
 
 
 ////////////////////////////////////////////////////

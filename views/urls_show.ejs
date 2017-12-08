@@ -17,5 +17,12 @@
     <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
     <input type="submit" value="Update">
   </form>
+
+  Visitors:
+  <br>
+  <% for (let visitor of urlDB.visitors) { %>
+  <%=`${visitor[1]} at ${visitor[0].YYYY}.${visitor[0].MM}.${visitor[0].DD} - ${visitor[0].time}`%>
+  <br>
+  <% } %>
 </body>
 </html>
