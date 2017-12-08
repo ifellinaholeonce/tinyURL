@@ -24,6 +24,8 @@
         <form method="POST" action="/urls/<%=site%>/delete?_method=DELETE">
           <input type="submit" value="DELETE">
         </form>
+        Views:<%=urlDB[site].visits%>
+        Unique Views:<%=urlDB[site].uniqueVisits%>
       </li>
     </div>
     <% } %>

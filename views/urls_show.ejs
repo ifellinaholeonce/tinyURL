@@ -9,7 +9,7 @@
 
   <h1><%=shortURL%></h1>
   <h2><%=urlDB[shortURL]%></h2>
-  <h3><%=urlDB.visits%></h3><h3><%=urlDB.uniqueVisits%></h3>
+  <h3>Views:<%=urlDB.visits%></h3><h3>Unique Views:<%=urlDB.uniqueVisits%></h3>
 
   <form action="?_method=PUT" method="POST" style="margin:150px;">
     <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
