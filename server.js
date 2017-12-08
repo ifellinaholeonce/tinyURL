@@ -124,8 +124,10 @@ app.post("/urls", (req, res) => {
      [shortURL]: longURL,
      'user_id': user_id,
      'visits': 0,
-     'uniqueVisits': 0
+     'uniqueVisits': 0,
+     'timestampCreated': generateTimestamp()
     };
+    console.log(urlDB[shortURL]);
     res.redirect(303, `/urls/${shortURL}`);
   } else {
     res.redirect(400, "/");
@@ -217,7 +219,7 @@ let checkPassword = (password, hashedPassword) => {
 };
 
 ////////////////////////////////////////////////////
-//////////////RANDOM ALPHANUMBER GEN////////////////
+//////////////STRING AND TIME GENERATOR/////////////
 ////////////////////////////////////////////////////
 let generateRandomString = (length, chars) => {
   let mask = '';
@@ -230,6 +232,25 @@ let generateRandomString = (length, chars) => {
   }
   return result;
 };
+
+let leftPad = (num) => {
+  if (num < 10) {
+    return '0' + num;
+  }
+  return num;
+};
+
+let generateTimestamp = () => {
+  let date = new Date();
+  let timezone = -5; //To offset UTC to Eastern Time Zone. TODO allow user to set timezone//set timezone by user location.
+  return  {
+      "YYYY": date.getFullYear(),
+      "MM": leftPad(date.getMonth()+1),
+      "DD": leftPad(date.getDate()),
+      "time": `${leftPad(date.getHours()+timezone)}:${leftPad(date.getMinutes())}`
+    };
+};
+
 
 ////////////////////////////////////////////////////
 //////////////Check Registration////////////////////

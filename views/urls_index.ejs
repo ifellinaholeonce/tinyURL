@@ -26,6 +26,8 @@
         </form>
         Views:<%=urlDB[site].visits%>
         Unique Views:<%=urlDB[site].uniqueVisits%>
+        <br>
+        <%= `${urlDB[site].timestampCreated.YYYY}.${urlDB[site].timestampCreated.MM}.${urlDB[site].timestampCreated.DD}` %>
       </li>
     </div>
     <% } %>
