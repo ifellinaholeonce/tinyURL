@@ -5,7 +5,6 @@ const cookieSession = require('cookie-session');
 const methodOverride = require('method-override');
 const bcrypt = require('bcrypt');
 
-
 const PORT = process.env.PORT || 8080;
 
 const urlDB = require('./models/urls').urlDB;
@@ -20,7 +19,9 @@ app.use(cookieSession({
 }));
 app.use(methodOverride('_method'));
 
-
+////////////////////////////////////////////////////
+//////////////LANDING PAGE//////////////////////////
+////////////////////////////////////////////////////
 app.get("/", (req, res) => {
   const { user_id } = req.session;
   const user = users[user_id];
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
     user,
     urlDB
   };
-  if (isLoggedIn(user_id)) {
+  if (isLoggedIn(user_id)) { //if the user is logged in redirect to urls_index
     res.redirect("/urls");
   }
   res.render("landing", templateVars);
@@ -39,11 +40,11 @@ app.get("/", (req, res) => {
 ////////////////////////////////////////////////////
 
 app.get("/register", (req, res) => {
+  const { user_id } = req.session;
   let templateVars = {
-    user: users[req.session.user_id],
+    user: users[user_id],
     urlDB
   };
-  const { user_id } = req.session;
   if (isLoggedIn(user_id)) {
     res.redirect('/urls');
   } else {
@@ -55,15 +56,16 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password || checkEmailExists(email)) {
     res.status(400).send("Invalid Email or Password or Email already registered.");
+  } else {
+    const id = generateRandomString(8, '#aA');
+    users[id] = {
+      id: id,
+      email: email,
+      hashedPassword: hashPassword(password)
+    };
+    req.session.user_id = id;
+    res.redirect(303, '/urls');
   }
-  const id = generateRandomString(8, '#aA');
-  users[id] = {
-    id: id,
-    email: email,
-    hashedPassword: hashPassword(password)
-  };
-  req.session.user_id = id;
-  res.redirect(303, '/urls');
 });
 
 app.get("/login", (req, res) => {
@@ -105,7 +107,7 @@ app.get("/urls", (req, res) => {
   const { user_id } = req.session;
   const user = users[user_id];
   let templateVars = {
-    user: users[user_id],
+    user,
     urlDB: urlsForId(user_id)
   };
   if (isLoggedIn(user_id)) {
@@ -131,18 +133,16 @@ app.post("/urls", (req, res) => {
    console.log(urlDB[shortURL]);
    res.redirect(303, `/urls/${shortURL}`);
  } else {
-  res.redirect(400, "/");
+  res.status(400).redirect("/");
 }
 });
 
 app.get("/urls/new", (req, res) => {
   const { user_id } = req.session;
-  const user = user_id;
   let templateVars = {
-    user: users[user_id],
+    user: users[user_id]
   };
-  if (user) {
-    templateVars.userEmail = user.email;
+  if (isLoggedIn(user_id)) {
     res.render("urls_new", templateVars);
   } else {
     res.redirect('/login');
@@ -161,6 +161,8 @@ app.get("/urls/:id", (req, res) => {
     let usersURLs = urlsForId(user_id);
     if (usersURLs[shortURL]) {
       res.render("urls_show", templateVars);
+    } else {
+      res.status(400).redirect("/");
     }
   } else {
     res.status(400).redirect("/");
@@ -168,8 +170,8 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.put("/urls/:id", (req, res) => {
-  let shortURL = req.params.id;
-  let longURL = req.body.longURL;
+  const { id: shortURL } = req.params;
+  const { longURL } = req.body;
   urlDB[shortURL][shortURL] = longURL;
   res.redirect(303, `/urls`);
 });
@@ -195,7 +197,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let shortURL = req.params.shortURL;
+  const { id: shortURL } = req.params;
   if (urlDB[shortURL]) {
     urlDB[shortURL].visits++;
     checkUniqueVisit(shortURL, req);
