@@ -126,12 +126,12 @@ app.post("/urls", (req, res) => {
      'visits': 0,
      'uniqueVisits': 0,
      'timestampCreated': generateTimestamp()
-    };
-    console.log(urlDB[shortURL]);
-    res.redirect(303, `/urls/${shortURL}`);
-  } else {
-    res.redirect(400, "/");
-  }
+   };
+   console.log(urlDB[shortURL]);
+   res.redirect(303, `/urls/${shortURL}`);
+ } else {
+  res.redirect(400, "/");
+}
 });
 
 app.get("/urls/new", (req, res) => {
@@ -155,14 +155,15 @@ app.get("/urls/:id", (req, res) => {
     user: users[user_id],
     shortURL,
     urlDB: urlDB[shortURL]
-    };
+  };
   if (isLoggedIn(user_id)) {
     let usersURLs = urlsForId(user_id);
     if (usersURLs[shortURL]) {
       res.render("urls_show", templateVars);
     }
+  } else {
+    res.status(400).redirect("/");
   }
-  res.status(400).redirect("/");
 });
 
 app.put("/urls/:id", (req, res) => {
@@ -174,14 +175,14 @@ app.put("/urls/:id", (req, res) => {
 
 app.delete("/urls/:id/delete", (req, res) => {
   const { user_id } = req.session;
-    const { id: shortURL } = req.params;
+  const { id: shortURL } = req.params;
   if (isLoggedIn(user_id)) {
     let usersURLs = urlsForId(user_id);
     if (usersURLs[shortURL]) {
       delete urlDB[shortURL];
       res.redirect(303, "/urls");
     } else {
-    res.status(400).redirect("/");
+      res.status(400).redirect("/");
     }
   } else {
     res.status(400).redirect("/");
@@ -198,9 +199,9 @@ app.get("/u/:shortURL", (req, res) => {
     urlDB[shortURL].visits++;
     checkUniqueVisit(shortURL, req);
     if (urlDB[shortURL][shortURL].startsWith('http://www.') || urlDB[shortURL][shortURL].startsWith('https://www.')) {
-    res.redirect(307, urlDB[shortURL][shortURL]);
+      res.redirect(307, urlDB[shortURL][shortURL]);
     } else {
-    res.redirect(307, `http://www.${urlDB[shortURL][shortURL]}`);
+      res.redirect(307, `http://www.${urlDB[shortURL][shortURL]}`);
     }
   } else {
     res.redirect(404, "/urls/new");
@@ -244,11 +245,11 @@ let generateTimestamp = () => {
   let date = new Date();
   let timezone = -5; //To offset UTC to Eastern Time Zone. TODO allow user to set timezone//set timezone by user location.
   return  {
-      "YYYY": date.getFullYear(),
-      "MM": leftPad(date.getMonth()+1),
-      "DD": leftPad(date.getDate()),
-      "time": `${leftPad(date.getHours()+timezone)}:${leftPad(date.getMinutes())}`
-    };
+    "YYYY": date.getFullYear(),
+    "MM": leftPad(date.getMonth()+1),
+    "DD": leftPad(date.getDate()),
+    "time": `${leftPad(date.getHours()+timezone)}:${leftPad(date.getMinutes())}`
+  };
 };
 
 
@@ -261,7 +262,7 @@ let checkEmailExists = (email) => {
       return true;
     }
   }
-    return false;
+  return false;
 };
 
 let getUserID = (email) => {
