@@ -8,9 +8,11 @@
   <% include ./partials/_header %>
 
   <h1><%=shortURL%></h1>
-  <h2><%=urlDB[shortURL][shortURL]%></h2>
+  <h2><%=urlDB[shortURL]%></h2>
+  <h3><%=urlDB.visits%></h3>
+
   <form action="?_method=PUT" method="POST" style="margin:150px;">
-    <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL][shortURL]%>" style="width: 300px">
+    <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
     <input type="submit" value="Update">
   </form>
 </body>

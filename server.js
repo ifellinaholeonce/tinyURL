@@ -122,7 +122,8 @@ app.post("/urls", (req, res) => {
     let shortURL = generateRandomString(6, '#aA');
     urlDB[shortURL] = {
      [shortURL]: longURL,
-     'user_id': user_id
+     'user_id': user_id,
+     'visits': 0
     };
     res.redirect(303, `/urls/${shortURL}`);
   } else {
@@ -150,7 +151,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     user: users[user_id],
     shortURL,
-    urlDB
+    urlDB: urlDB[shortURL]
     };
   if (isLoggedIn(user_id)) {
     let usersURLs = urlsForId(user_id);
@@ -189,12 +190,9 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  // let templateVars = {
-  //   user_id: req.session.user_id
-  // };
   let shortURL = req.params.shortURL;
-  //console.log(urlDB[shortURL][shortURL]);
   if (urlDB[shortURL]) {
+    urlDB[shortURL].visits++;
     if (urlDB[shortURL][shortURL].startsWith('http://www.') || urlDB[shortURL][shortURL].startsWith('https://www.')) {
     res.redirect(307, urlDB[shortURL][shortURL]);
     } else {
