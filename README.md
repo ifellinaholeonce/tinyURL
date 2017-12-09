@@ -4,8 +4,10 @@ TinyURL is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-SCREENSHOT
-SCREENSHOT
+!["Landing Page for users not logged in"](https://github.com/ifellinaholeonce/tinyURL/blob/master/docs/landing.png?raw=true)
+!["Registration Page for users create an account"](https://github.com/ifellinaholeonce/tinyURL/blob/master/docs/register.png?raw=true)
+!["List of all your shortened URLs: delete them, edit them and see a brief overview of the traffic that has gone through."](https://github.com/ifellinaholeonce/tinyURL/blob/master/docs/urls_index.png?raw=true)
+!["Edit your short URL's destination. See the amount of visitors and unique visitors for your short URL"](https://github.com/ifellinaholeonce/tinyURL/blob/master/docs/url_edit.png?raw=true)
 
 ## Dependencies
 
