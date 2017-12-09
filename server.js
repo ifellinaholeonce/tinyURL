@@ -197,9 +197,7 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const { shortURL } = req.params;
-  console.log(shortURL);
   if (urlDB[shortURL]) {
-    console.log("Found shortURL", urlDB[shortURL]);
     urlDB[shortURL].visits++;
     checkUniqueVisit(shortURL, req);
     addVisitorTimestamp(shortURL, req);
@@ -209,7 +207,6 @@ app.get("/u/:shortURL", (req, res) => {
       res.redirect(307, `http://www.${urlDB[shortURL][shortURL]}`);
     }
   } else {
-    console.log("Cant find", urlDB[shortURL]);
     res.redirect(404, "/urls/new");
   }
 });
