@@ -130,7 +130,6 @@ app.post("/urls", (req, res) => {
      'visitors': [],
      'timestampCreated': generateTimestamp()
    };
-   console.log(urlDB[shortURL]);
    res.redirect(303, `/urls/${shortURL}`);
  } else {
   res.status(400).redirect("/");

@@ -14,22 +14,28 @@
        </div>
      </div>
    </div>
-   <ul>
+   <ul class="list-group">
     <div class="container">
+      <p class="lead">Your Shortened URLs</p>
       <% for ( let site in urlDB ) { %>
-      <div class="row">
-        <li>
+      <li class="list-group-item">
+        <div class="row">
+        <div class="col-md-6">
           <%=urlDB[site][site]%> shortened to <%= site %>
-          <a href="/urls/<%=site%>">Edit</a>
-          <form method="POST" action="/urls/<%=site%>/delete?_method=DELETE">
-            <input type="submit" value="DELETE">
-          </form>
+          <br>
           Views:<%=urlDB[site].visits%>
           Unique Views:<%=urlDB[site].uniqueVisits%>
           <br>
           Created:<%= `${urlDB[site].timestampCreated.YYYY}.${urlDB[site].timestampCreated.MM}.${urlDB[site].timestampCreated.DD} at ${urlDB[site].timestampCreated.time}` %>
-        </li>
-      </div>
+        </div>
+        <div class="col-md-6">
+          <a class="btn-primary btn" href="/urls/<%=site%>">Edit</a>
+          <form method="POST" action="/urls/<%=site%>/delete?_method=DELETE">
+            <input type="submit" value="DELETE" class="btn-danger btn" role="Delete">
+          </form>
+        </div>
+        </div>
+      </li>
       <% } %>
     </div>
   </ul>

@@ -8,17 +8,27 @@
   <% include ./partials/_header %>
 
   <h1><%=shortURL%></h1>
+  <hr>
   <h2><%=urlDB[shortURL]%></h2>
-  <h3>Views:<%=urlDB.visits%></h3><h3>Unique Views:<%=urlDB.uniqueVisits%></h3>
-  <br>
-  <h3>Created:<%= `${urlDB.timestampCreated.YYYY}.${urlDB.timestampCreated.MM}.${urlDB.timestampCreated.DD} at ${urlDB.timestampCreated.time}` %></h3>
-
-  <form action="?_method=PUT" method="POST" style="margin:150px;">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-6 offset-md-3">
+  <p class="lead">Views: <%=urlDB.visits%> | Unique Views: <%=urlDB.uniqueVisits%></p>
+  </div>
+  </div>
+  <p class="lead">Created:<%= `${urlDB.timestampCreated.YYYY}.${urlDB.timestampCreated.MM}.${urlDB.timestampCreated.DD} at ${urlDB.timestampCreated.time}` %></p>
+<br>
+<hr>
+<p>Edit the URL</p>
+  <form action="?_method=PUT" method="POST">
     <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
     <input type="submit" value="Update">
   </form>
-
+</div>
+<br>
+<% if (urlDB.visitors.length > 0) { %>
   Visitors:
+  <% } %>
   <br>
   <% for (let visitor of urlDB.visitors) { %>
   <%=`${visitor[1]} at ${visitor[0].YYYY}.${visitor[0].MM}.${visitor[0].DD} - ${visitor[0].time}`%>
