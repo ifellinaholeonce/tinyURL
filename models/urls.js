@@ -4,6 +4,7 @@ const urlDB = {
     "user_id": "userRandomID",
     "visits": 10,
     "uniqueVisits": 1,
+    "visitors": [],
     "timestampCreated": {
       "YYYY": 2017,
       "MM": 07,
@@ -16,6 +17,7 @@ const urlDB = {
     "user_id": "userRandomID",
     "visits": 4,
     "uniqueVisits": 4,
+    "visitors": [],
     "timestampCreated": {
       "YYYY": 2017,
       "MM": 07,

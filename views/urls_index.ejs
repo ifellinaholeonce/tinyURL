@@ -20,20 +20,20 @@
       <% for ( let site in urlDB ) { %>
       <li class="list-group-item">
         <div class="row">
-        <div class="col-md-6">
-          <%=urlDB[site][site]%> shortened to <%= site %>
-          <br>
-          Views:<%=urlDB[site].visits%>
-          Unique Views:<%=urlDB[site].uniqueVisits%>
-          <br>
-          Created:<%= `${urlDB[site].timestampCreated.YYYY}.${urlDB[site].timestampCreated.MM}.${urlDB[site].timestampCreated.DD} at ${urlDB[site].timestampCreated.time}` %>
-        </div>
-        <div class="col-md-6">
-          <a class="btn-primary btn" href="/urls/<%=site%>">Edit</a>
-          <form method="POST" action="/urls/<%=site%>/delete?_method=DELETE">
-            <input type="submit" value="DELETE" class="btn-danger btn" role="Delete">
-          </form>
-        </div>
+          <div class="col-md-6">
+            <%=urlDB[site][site]%> shortened to <%= site %>
+            <br>
+            Views:<%=urlDB[site].visits%>
+            Unique Views:<%=urlDB[site].uniqueVisits%>
+            <br>
+            Created:<%= `${urlDB[site].timestampCreated.YYYY}.${urlDB[site].timestampCreated.MM}.${urlDB[site].timestampCreated.DD} at ${urlDB[site].timestampCreated.time}` %>
+          </div>
+          <div class="col-md-6">
+            <a class="btn-primary btn" href="/urls/<%=site%>"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>
+            <form method="POST" action="/urls/<%=site%>/delete?_method=DELETE">
+              <input type="submit" value="DELETE" class="btn-danger btn" role="Delete">
+            </form>
+          </div>
         </div>
       </li>
       <% } %>

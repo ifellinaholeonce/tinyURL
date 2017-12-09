@@ -13,20 +13,20 @@
   <div class="container">
     <div class="row text-center">
       <div class="col-md-6 offset-md-3">
-  <p class="lead">Views: <%=urlDB.visits%> | Unique Views: <%=urlDB.uniqueVisits%></p>
+        <p class="lead">Views: <%=urlDB.visits%> | Unique Views: <%=urlDB.uniqueVisits%></p>
+      </div>
+    </div>
+    <p class="lead">Created:<%= `${urlDB.timestampCreated.YYYY}.${urlDB.timestampCreated.MM}.${urlDB.timestampCreated.DD} at ${urlDB.timestampCreated.time}` %></p>
+    <br>
+    <hr>
+    <p>Edit the URL</p>
+    <form action="?_method=PUT" method="POST">
+      <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
+      <input type="submit" value="Update">
+    </form>
   </div>
-  </div>
-  <p class="lead">Created:<%= `${urlDB.timestampCreated.YYYY}.${urlDB.timestampCreated.MM}.${urlDB.timestampCreated.DD} at ${urlDB.timestampCreated.time}` %></p>
-<br>
-<hr>
-<p>Edit the URL</p>
-  <form action="?_method=PUT" method="POST">
-    <input id="longURL" type="text" name="longURL" value="<%=urlDB[shortURL]%>" style="width: 300px">
-    <input type="submit" value="Update">
-  </form>
-</div>
-<br>
-<% if (urlDB.visitors.length > 0) { %>
+  <br>
+  <% if (urlDB.visitors.length > 0) { %>
   Visitors:
   <% } %>
   <br>
